@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estrategia Canales de Difusión - Pudahuel TV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #00a69c;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        button {
+            background-color: white;
+            color: #00a69c;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover:not(:disabled) {
+            background-color: #f0f0f0;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .slide-counter {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .slide {
+            background-color: white;
+            border-radius: 1rem;
+            padding: 3rem;
+            min-height: 700px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        .slide h1 {
+            font-size: 3rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .slide h2 {
+            font-size: 2.5rem;
+            color: #00a69c;
+            margin-bottom: 2rem;
+        }
+        
+        .slide h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 2rem;
+            color: #00a69c;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .date {
+            font-size: 1.25rem;
+            color: #6b7280;
+            text-align: center;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        
+        .card {
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .card-gradient {
+            background: linear-gradient(135deg, #00a69c, #008577);
+            color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+        }
+        
+        .card-gradient-alt {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+        }
+        
+        .card-gradient-yellow {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+        }
+        
+        .card-gradient-blue {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+        }
+        
+        .highlight-box {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-radius: 0.5rem;
+        }
+        
+        .info-box {
+            background-color: #dbeafe;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .success-box {
+            background-color: #d1fae5;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+        
+        .purple-box {
+            background-color: #ede9fe;
+            border-left: 4px solid #8b5cf6;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+        
+        .blue-box {
+            background-color: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+        
+        .green-box {
+            background-color: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .timeline-time {
+            background-color: #00a69c;
+            color: white;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+        
+        .timeline-green .timeline-time {
+            background-color: #10b981;
+        }
+        
+        .timeline-purple .timeline-time {
+            background-color: #8b5cf6;
+        }
+        
+        .timeline-blue .timeline-time {
+            background-color: #3b82f6;
+        }
+        
+        .timeline-red {
+            background-color: #fee2e2;
+            border: 2px solid #ef4444;
+        }
+        
+        .timeline-red .timeline-time {
+            background-color: #ef4444;
+        }
+        
+        .indicators {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .indicator.active {
+            background-color: white;
+            width: 32px;
+            border-radius: 6px;
+        }
+        
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+        }
+        
+        .icon {
+            font-size: 6rem;
+            margin-bottom: 2rem;
+        }
+        
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-box {
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        
+        .stat-label {
+            font-weight: 600;
+            color: #00a69c;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-value {
+            font-size: 1.875rem;
+            font-weight: bold;
+        }
+        
+        .stat-detail {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .flow-circle {
+            background-color: #e0e7ff;
+            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 0.5rem;
+        }
+        
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .flow-arrow {
+            color: #8b5cf6;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <div class="nav-buttons">
+                <button onclick="prevSlide()" id="prevBtn">← Anterior</button>
+                <span class="slide-counter" id="counter">1 / 9</span>
+                <button onclick="nextSlide()" id="nextBtn">Siguiente →</button>
+            </div>
+        </div>
+
+        <!-- Slide 1 -->
+        <div class="slide active" id="slide-0">
+            <div class="center-content">
+                <div class="icon">📡</div>
+                <h1>Estrategia Canales de Difusión</h1>
+                <p class="subtitle">Instagram y WhatsApp</p>
+                <p class="date">Pudahuel TV - Diciembre 2025</p>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide" id="slide-1">
+            <h2>Contexto</h2>
+            <div style="margin-bottom: 2rem; background-color: #ede9fe; padding: 1.5rem; border-radius: 0.75rem;">
+                <p style="font-weight: bold; font-size: 1.5rem; color: #7c3aed; margin-bottom: 0.5rem;">🔴 Inicio transmisiones EN VIVO</p>
+                <p style="font-size: 1.25rem;">1 de diciembre • 15:00 hrs • Lunes a viernes</p>
+            </div>
+            
+            <div class="grid-2" style="margin-bottom: 2rem;">
+                <div class="stat-box">
+                    <p class="stat-label">Audiencia principal</p>
+                    <p class="stat-value">25-54 años</p>
+                    <p class="stat-detail">84% del total</p>
+                </div>
+                <div class="stat-box">
+                    <p class="stat-label">Engagement actual</p>
+                    <p class="stat-value">43%</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <p style="font-weight: bold; font-size: 1.1rem; margin-bottom: 1rem;">Programación semanal:</p>
+                <ul>
+                    <li>• <strong>Lunes:</strong> Nuestro Mejor Momento (tercera edad)</li>
+                    <li>• <strong>Martes:</strong> Mi Barrio (comunidad local)</li>
+                    <li>• <strong>Miércoles:</strong> Al Ritmo del Deporte</li>
+                    <li>• <strong>Jueves:</strong> Tenemos más que hablar (salud)</li>
+                    <li>• <strong>Viernes:</strong> Pudahuel Más Sano</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide" id="slide-2">
+            <h2>Objetivos de los Canales</h2>
+            <div class="grid-2">
+                <div class="card-gradient">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📱</div>
+                    <h3>Canal Instagram</h3>
+                    <p style="font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Comunicación Unidireccional</p>
+                    <ul>
+                        <li>✓ Amplificar contenidos</li>
+                        <li>✓ Generar expectativa</li>
+                        <li>✓ Informar de manera ágil</li>
+                    </ul>
+                </div>
+
+                <div class="card-gradient-alt">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">💬</div>
+                    <h3>Canal WhatsApp</h3>
+                    <p style="font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Comunicación Bidireccional</p>
+                    <ul>
+                        <li>✓ Crear comunidad activa</li>
+                        <li>✓ Conversación genuina</li>
+                        <li>✓ Recoger feedback e ideas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 2rem;">
+                <p style="font-size: 1.1rem; font-weight: 600;">
+                    <strong>Diferencia clave:</strong> Instagram para informar • WhatsApp para conversar
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide" id="slide-3">
+            <h2>Flujo Diario de Contenidos</h2>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="timeline-item timeline-green">
+                    <div class="timeline-time">09:00</div>
+                    <div>
+                        <p style="font-weight: bold; font-size: 1.1rem;">WhatsApp: Buenos días + contexto</p>
+                        <p style="color: #6b7280;">Saludo, tema del día, pregunta abierta</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item timeline-purple">
+                    <div class="timeline-time">10:00</div>
+                    <div>
+                        <p style="font-weight: bold; font-size: 1.1rem;">Instagram: Adelanto del programa</p>
+                        <p style="color: #6b7280;">Tema, invitado, recordatorio horario</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item timeline-green">
+                    <div class="timeline-time">14:30</div>
+                    <div>
+                        <p style="font-weight: bold; font-size: 1.1rem;">WhatsApp: Recordatorio transmisión</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item timeline-red">
+                    <div class="timeline-time">15:00</div>
+                    <div>
+                        <p style="font-weight: bold; font-size: 1.25rem;">🔴 TRANSMISIÓN EN VIVO</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item timeline-purple">
+                    <div class="timeline-time">17:30</div>
+                    <div>
+                        <p style="font-weight: bold; font-size: 1.1rem;">Instagram: Cierre del programa</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item timeline-green">
+                    <div class="timeline-time">17:30</div>
+                    <div>
+                        <p style="font-weight: bold; font-size: 1.1rem;">WhatsApp: Post-vivo + "La Pregunta del Día"</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item timeline-blue">
+                    <div class="timeline-time">19:00</div>
+                    <div>
+                        <p style="font-weight: bold; font-size: 1.1rem;">Publicación REEL en redes principales</p>
+                        <p style="color: #6b7280; font-size: 0.875rem;">Instagram feed, Facebook, YouTube, TikTok</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide" id="slide-4">
+            <h2>Mecánica Clave: "La Pregunta del Día"</h2>
+            
+            <div style="background: linear-gradient(to right, #ede9fe, #d1fae5); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem;">
+                <p style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">¿Qué es?</p>
+                <p style="font-size: 1.1rem;">Pregunta relacionada al programa que se responde <strong>solo por WhatsApp</strong> para generar participación activa.</p>
+            </div>
+
+            <div class="grid-3" style="margin-bottom: 1.5rem;">
+                <div class="card">
+                    <p style="font-weight: bold; color: #00a69c; margin-bottom: 0.5rem;">1. Durante programa</p>
+                    <p style="font-size: 0.875rem;">Conductor dice pregunta e invita a responder</p>
+                </div>
+                <div class="card">
+                    <p style="font-weight: bold; color: #00a69c; margin-bottom: 0.5rem;">2. Post-programa</p>
+                    <p style="font-size: 0.875rem;">Equipo revisa y selecciona 5-10 participantes</p>
+                </div>
+                <div class="card">
+                    <p style="font-weight: bold; color: #00a69c; margin-bottom: 0.5rem;">3. Al día siguiente</p>
+                    <p style="font-size: 0.875rem;">Nombres mencionados al aire y en WhatsApp</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <p style="font-weight: bold; font-size: 1.1rem; margin-bottom: 1rem;">Tipos de preguntas por día:</p>
+                <ul>
+                    <li>• <strong>Lunes:</strong> Reflexiva sobre tercera edad</li>
+                    <li>• <strong>Martes:</strong> Sobre problemática local del programa</li>
+                    <li>• <strong>Miércoles:</strong> Dato/cifra deportiva mencionada</li>
+                    <li>• <strong>Jueves:</strong> Consejo de salud compartido</li>
+                    <li>• <strong>Viernes:</strong> Compromiso personal de vida sana</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide" id="slide-5">
+            <h2>El "Premio" (sin costo material)</h2>
+            
+            <div class="grid-2" style="margin-bottom: 2rem;">
+                <div class="card-gradient-yellow">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🏆</div>
+                    <h3>Reconocimiento Inmediato</h3>
+                    <ul style="margin-top: 1rem;">
+                        <li>✓ Nombre mencionado al aire</li>
+                        <li>✓ Saludo en WhatsApp</li>
+                        <li>✓ Validación pública</li>
+                    </ul>
+                </div>
+
+                <div class="card-gradient-blue">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+                    <h3>Reconocimiento Avanzado</h3>
+                    <ul style="margin-top: 1rem;">
+                        <li>✓ Imagen digital personalizada</li>
+                        <li>✓ Base de oyentes activos</li>
+                        <li>✓ Invitación a programas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="purple-box">
+                <p style="font-weight: bold; font-size: 1.25rem; margin-bottom: 1rem;">🔄 Círculo Virtuoso de Participación</p>
+                <div class="flow-container" style="font-size: 0.875rem;">
+                    <div class="flow-step">
+                        <div class="flow-circle" style="background-color: #ddd6fe;">1</div>
+                        <p>Participa</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-circle" style="background-color: #c4b5fd;">2</div>
+                        <p>Reconocimiento</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-circle" style="background-color: #a78bfa; color: white;">3</div>
+                        <p>Regular</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-circle" style="background-color: #8b5cf6; color: white;">4</div>
+                        <p>Base datos</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-circle" style="background-color: #7c3aed; color: white;">5</div>
+                        <p>Invitación</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 1.5rem;">
+                <p style="font-size: 1.1rem;"><strong>Para audiencia local:</strong> El reconocimiento social vale más que cualquier premio material</p>
+            </div>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="slide" id="slide-6">
+            <h2>Sistema de Reconocimiento Avanzado</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="purple-box">
+                    <h3 style="color: #7c3aed; margin-bottom: 1rem;">Fase 1: Meses 1-3</h3>
+                    <p style="font-weight: 600; margin-bottom: 0.5rem;">Reconocimiento Digital</p>
+                    <p>• Diseñar plantilla "Oyente Activo/a"</p>
+                    <p>• Enviar a participantes regulares (3+ veces/mes)</p>
+                </div>
+
+                <div class="blue-box">
+                    <h3 style="color: #2563eb; margin-bottom: 1rem;">Fase 2: Meses 3-6</h3>
+                    <p style="font-weight: 600; margin-bottom: 0.5rem;">Base de Datos</p>
+                    <p>• Registro: nombre, temas de interés, barrio, experiencia</p>
+                    <p>• Identificar perfiles interesantes para programas</p>
+                </div>
+
+                <div class="green-box">
+                    <h3 style="color: #059669; margin-bottom: 1rem;">Fase 3: Meses 6+</h3>
+                    <p style="font-weight: 600; margin-bottom: 0.5rem;">Invitaciones a Programas</p>
+                    <p>• Contactar oyentes para participar</p>
+                    <p>• Invitación personal vía WhatsApp</p>
+                    <p>• Voces ciudadanas reales en contenidos</p>
+                </div>
+            </div>
+
+            <div class="stat-box" style="margin-top: 1.5rem;">
+                <p style="font-weight: bold; font-size: 1.1rem; margin-bottom: 1rem;">Ejemplos de aplicación:</p>
+                <div class="grid-3">
+                    <div style="background-color: white; padding: 0.75rem; border-radius: 0.5rem;">
+                        <p style="font-weight: bold; color: #00a69c; margin-bottom: 0.25rem;">Rosa - Mi Barrio</p>
+                        <p style="font-size: 0.875rem;">Participa siempre → Invitarla a contar problemática de basurales</p>
+                    </div>
+                    <div style="background-color: white; padding: 0.75rem; border-radius: 0.5rem;">
+                        <p style="font-weight: bold; color: #00a69c; margin-bottom: 0.25rem;">Carlos - Deporte</p>
+                        <p style="font-size: 0.875rem;">Responde todo deportivo → Invitarlo a hablar de fútbol senior</p>
+                    </div>
+                    <div style="background-color: white; padding: 0.75rem; border-radius: 0.5rem;">
+                        <p style="font-weight: bold; color: #00a69c; margin-bottom: 0.25rem;">Patricia - Historias</p>
+                        <p style="font-size: 0.875rem;">40 años en Pudahuel → Cápsula "Historias de Pudahuel"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8 -->
+        <div class="slide" id="slide-7">
+            <h2>Recursos y Lanzamiento</h2>
+            
+            <div class="grid-2" style="margin-bottom: 2rem;">
+                <div class="card-gradient">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+                    <h3>Carga de Trabajo</h3>
+                    <div style="margin-top: 1rem; font-size: 1.1rem;">
+                        <p>Preparación: <strong>10 min</strong></p>
+                        <p>Post-vivo: <strong>10 min</strong></p>
+                        <p>Pregunta del Día: <strong>20 min</strong></p>
+                        <p>Contenido adicional: <strong>5-10 min</strong></p>
+                        <div style="border-top: 2px solid rgba(255,255,255,0.3); margin-top: 1rem; padding-top: 1rem;">
+                            <p style="font-size: 1.5rem; font-weight: bold;">Total: 45-50 min/día</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-gradient-alt">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📡</div>
+                    <h3>Lanzamiento</h3>
+                    <div style="margin-top: 1rem;">
+                        <p style="font-size: 1.25rem; font-weight: bold;">📅 25-27 noviembre</p>
+                        <p style="font-size: 0.875rem; margin-bottom: 1rem;">(semana previa a transmisiones)</p>
+                        <ul style="margin-top: 1rem;">
+                            <li>• Día 1: Bienvenida</li>
+                            <li>• Día 2: Presentación equipo</li>
+                            <li>• Día 3: Anuncio transmisiones</li>
+                            <li>• Día 4: Programación semanal</li>
+                            <li>• Día 5: Invitación a participar</li>
+                        </ul>
+                        <p style="font-size: 1.25rem; font-weight: bold; margin-top: 1rem;">🔴 1 diciembre: ¡Arrancamos!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background-color: #fef3c7; border: 2px solid #fbbf24; padding: 1.5rem; border-radius: 0.75rem;">
+                <p style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem;">⚠️ Clave del Éxito</p>
+                <p style="font-size: 1.1rem;">Consistencia absoluta + Reconocimiento genuino + Comunidad como protagonista</p>
+            </div>
+        </div>
+
+        <!-- Slide 9 -->
+        <div class="slide" id="slide-8">
+            <h2>Resumen Ejecutivo</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="purple-box">
+                    <p style="font-weight: bold; font-size: 1.25rem; color: #7c3aed; margin-bottom: 1rem;">🎯 Objetivo Central</p>
+                    <p style="font-size: 1.1rem;">Crear comunidad activa y comprometida a través de dos canales complementarios que amplifican contenido (Instagram) y generan conversación genuina (WhatsApp).</p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card" style="border-color: #00a69c;">
+                        <p style="font-weight: bold; color: #00a69c; margin-bottom: 0.5rem;">📱 Instagram</p>
+                        <p style="font-size: 0.875rem;">Informar, amplificar, generar expectativa. Unidireccional.</p>
+                    </div>
+                    <div class="card" style="border-color: #10b981;">
+                        <p style="font-weight: bold; color: #10b981; margin-bottom: 0.5rem;">💬 WhatsApp</p>
+                        <p style="font-size: 0.875rem;">Conversar, participar, construir comunidad. Bidireccional.</p>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <p style="font-weight: bold; font-size: 1.25rem; margin-bottom: 1rem;">⭐ Diferenciador Clave</p>
+                    <p style="font-size: 1.1rem;"><strong>"La Pregunta del Día"</strong> - Mecánica que genera participación activa sin necesidad de premios materiales. El reconocimiento social es el motor.</p>
+                </div>
+
+                <div class="info-box">
+                    <p style="font-weight: bold; font-size: 1.25rem; color: #1e40af; margin-bottom: 1rem;">📊 Proyección</p>
+                    <ul>
+                        <li>• <strong>Mes 1-2:</strong> 5-10 respuestas diarias</li>
+                        <li>• <strong>Mes 3-6:</strong> 20-40 respuestas diarias</li>
+                        <li>• <strong>Mes 6+:</strong> 50+ respuestas + invitaciones a programas</li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <p style="font-weight: bold; font-size: 1.25rem; color: #065f46; margin-bottom: 1rem;">✅ Beneficios</p>
+                    <ul>
+                        <li>✓ Comunidad activa y comprometida</li>
+                        <li>✓ Contenido generado por usuarios</li>
+                        <li>✓ Fidelización de audiencia</li>
+                        <li>✓ Voces ciudadanas reales en programas</li>
+                        <li>✓ Bajo costo de implementación (45-50 min/día)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="indicators">
+            <div class="indicator active" onclick="goToSlide(0)"></div>
+            <div class="indicator" onclick="goToSlide(1)"></div>
+            <div class="indicator" onclick="goToSlide(2)"></div>
+            <div class="indicator" onclick="goToSlide(3)"></div>
+            <div class="indicator" onclick="goToSlide(4)"></div>
+            <div class="indicator" onclick="goToSlide(5)"></div>
+            <div class="indicator" onclick="goToSlide(6)"></div>
+            <div class="indicator" onclick="goToSlide(7)"></div>
+            <div class="indicator" onclick="goToSlide(8)"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 9;
+
+        function updateSlide() {
+            // Ocultar todos los slides
+            for (let i = 0; i < totalSlides; i++) {
+                document.getElementById(`slide-${i}`).classList.remove('active');
+            }
+            
+            // Mostrar el slide actual
+            document.getElementById(`slide-${currentSlide}`).classList.add('active');
+            
+            // Actualizar contador
+            document.getElementById('counter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            // Actualizar botones
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+            
+            // Actualizar indicadores
+            const indicators = document.querySelectorAll('.indicator');
+            indicators.forEach((indicator, index) => {
+                if (index === currentSlide) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+
+        // Navegación con teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Inicializar
+        updateSlide();
+    </script>
+</body>
+</html>
